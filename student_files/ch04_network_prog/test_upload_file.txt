@@ -1,0 +1,5 @@
+This file will be uploaded to the ch04_network_prog/uploads directory.
+
+Notes: to use this file, run 05_sendfile.py two ways.
+Once as a server and then as a client.
+See the notes within the source file on how to run the client and server.

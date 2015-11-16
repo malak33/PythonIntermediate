@@ -1,0 +1,2 @@
+This is just another file used by the document archiving exercise(s).
+It serves no special purpose other than to just exist as a file.

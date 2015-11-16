@@ -1,0 +1,217 @@
+Task4_1 Instructions
+--------------------
+Overview:
+Use these instructions to help assist in building the XMLRPC document uploader application.
+You will need to create/edit several files in this exercise.  As a general rule, we
+will work backward (from the database) toward the client.  We will edit the
+DocumentManager class before the client code, for example.
+
+
+
+
+Step 1 - Create globals.py
+------
+Within the starter folder create a file called globals.py.  Within it define two
+variables: host and port.  Give them the values 'localhost' and 8059 respectively
+(note: you may alter the port value if needed).  This file can now be used by both
+client and server modules.
+
+
+
+
+
+Step 2 - Implement add() in the DocumentManager Class
+------
+Open document.py then locate the add() method of the DocumentManager.  The purpose
+of the add() method is to add details into the database about a file that was uploaded.
+These details include (in database order): filename, path, filesize, when_added, is_public.
+Modify the add method to accept the following values (and default data values) passed in:
+
+filename,
+path='',
+is_public=False,
+filesize=0,
+when_added=datetime.now()
+
+Next, within add(), instantiate a Document object using the passed-in values, calling the
+instance: d.
+    Example->     d = Document(...insert data values...)
+
+Next, using the cursor (self.cursor), execute an SQL INSERT statement.  The syntax is:
+
+self.cursor.execute(statement, data)
+
+where data is a tuple of Document data, such as: (d.filename, d.filesize)
+and where statement is the following SQL:
+    'INSERT INTO {tbl}({fn}, {path}, {filesz}, {when_added}, {ispub}) VALUES (?,?,?,?,?)'
+
+Can you use the format() method on this string and pass in the appropriate values for each
+string variable?
+
+Add a commit call ( self.connection.commit() )
+
+Complete the method with appropriate exception handling as follows:
+
+        results = False
+        try:
+            ...code you added from above...
+            results = True
+        except sqlite3.Error:
+            pass
+
+        return results
+
+
+You will also need to import sqlite3 class.
+This completes the document.py file and the DocumentManager class.
+
+
+
+
+
+Step 3a  - Create server.py (the XMLRPC server-side module)
+------
+Create a file called server.py in the starter folder.  This will serve
+as the server-side component to the XMLRPC communications process.
+
+Import globals.py to refer to the host and port values.
+
+After your imports, create the following variable to point to your uploaded files directory:
+
+server_document_location = '../../user_documents'
+
+Next,create the XMLRPC server as follows:
+
+    server = SimpleXMLRPCServer((host, port), allow_none=True)
+    print('{host} running on {port}...'.format(host=host, port=port))
+    print('Archive directory: {archive_location}'.format(archive_location=os.path.abspath(server_document_location)))
+    server.register_function(receive_file, 'upload')
+    server.serve_forever()
+
+
+This will create the XMLRPC server on the desired host and port.  It will also register
+a function (created next), called receive_file(), which receives the uploaded file data.
+Notice the file is aliased (for use by the client) as 'upload'.
+
+Don't forget to import the SimpleXMLRPCServer class.
+
+
+
+
+Step 3b    - Create the receive_file() function
+-------
+Within the server, create a function called receive_file() that takes the following arguments:
+
+filename,
+results,
+is_public=False
+
+This function will save the uploaded file.  First, within the function, define the
+location the uploaded file will be saved:
+
+    file_location = os.path.join(server_document_location, filename)
+
+Don't forget to import os.
+
+Next, read the file data as follows:
+
+
+    with open(file_location, 'wb') as f:
+        f.write(results.data)
+
+
+Finally, call the DocumentManager's add() method and return these results from the
+receive_file() method
+
+    return DocumentManager().add(filename, filesize=os.stat(file_location).st_size, is_public=is_public)
+
+
+Don't forget to import the DocumentManager.
+
+This completes the receive_file() method and the server.py file.
+
+
+
+
+
+
+Step 4 - Create the client.py (the XMLRPC client-side module)
+------
+Within the starter folder, create a file called client.py.
+As before, import the globals.py module to obtain the host and port values.
+Create a function called send_file() with the following two arguments:
+
+filename,
+is_public=False
+
+
+Within send_file() create the ServerProxy() as follows:
+
+    proxy = ServerProxy('http://{host}:{port}'.format(host=host, port=port), allow_none=True)
+
+
+Don't forget to import ServerProxy.
+
+Next, within the function, open the file to be read, read the data, wrap it in a Binary()
+wrapper and send it to the server by calling the proxy's upload() method.  All of this
+might look like the following, including extracting the filename from the provided path to
+the file:
+
+    with open(filename, 'rb') as f:
+        path, fn = os.path.split(filename)
+        print('Sending {fn}'.format(fn=fn))
+        data = f.read()
+        proxy.upload(fn, Binary(data), is_public)
+
+
+Don't forget to import os and Binary (from the xmlrpc.client module).
+
+
+
+
+
+
+Step 5 - Complete the Driver (task4_1_starter.py)
+------
+Within task4_1_starter.py, create a function called upload() that accepts a filename.
+Within upload() invoke the send_file() method of the client.py module.
+
+The client module has already been imported for you.
+
+In the call to the client's send_file(), pass in the filename and True (for is_public).
+
+Invoke the upload() method, passing in the filename (yes, filename is global, so you
+don't really need to do this, but do it anyways).
+
+
+
+
+
+Step 6. - Test it out!
+-------
+This completes all pieces.  To test, run server.py first.  Then run task4_1_starter.py.
+It should upload harry.jpg into the user_documents folder and it should add a database entry
+into the documents.db documents table.
+
+
+
+Note: As you troubleshoot, to reset your database, simply re-run the
+ch03_oo/starter/create_documents_db.py file.
+
+
+
+
+
+Step 7.  -   Add a list_public() feature...
+Once the above is working, return to the app and add the ability to list all publicly
+visible files from the task4_1_starter.py file.
+
+For this step, you have less help.
+
+Here's the general procedure:
+a) Within server.py, create a list_public() to call the DocumentManager's list_public() method.
+b) Register this new function with the XMLRPC server.
+c) In the client.py, create a list_public() to call the server.py module's list_public()
+d) In the driver (task4_1_starter.py), call the client's list_public().
+
+You should be able to display all files that have been given a public visibility now.
