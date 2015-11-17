@@ -7,9 +7,10 @@
       Allows for searching by city names to determine a city population.
 
 """
+# fixed import statment so pycharm could find it
 import os
 
-from ch01_basics.solution.city_search import read_city_data, get_highest, get_largest, search
+from city_search import read_city_data, get_highest, get_largest, search
 
 working_dir = '../../resources'
 city_data = 'cities15000.txt'
