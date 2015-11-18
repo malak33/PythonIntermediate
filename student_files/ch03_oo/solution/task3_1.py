@@ -6,7 +6,8 @@
     Note: for imports to work properly, your student_files folder should be on your
     PYTHONPATH.
 """
-from ch03_oo.solution.document import DocumentManager
+#mark ch03_oo/solution as the doc root
+from document import DocumentManager
 
 database = '../../resources/documents.db'
 

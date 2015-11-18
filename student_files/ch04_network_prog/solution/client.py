@@ -1,7 +1,7 @@
 import os
 from xmlrpc.client import ServerProxy, Binary
 
-from ch04_network_prog.solution.globals import host, port
+from globals import host, port
 
 
 def send_file(filename, is_public=False):

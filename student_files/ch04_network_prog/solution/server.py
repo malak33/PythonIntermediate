@@ -1,8 +1,8 @@
 import os
 from xmlrpc.server import SimpleXMLRPCServer
 
-from ch04_network_prog.solution.globals import host, port
-from ch04_network_prog.solution.document import DocumentManager
+from globals import host, port
+from document import DocumentManager
 
 
 server_document_location = '../../user_documents'

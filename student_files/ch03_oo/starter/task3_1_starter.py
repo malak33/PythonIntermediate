@@ -12,7 +12,7 @@
     3. Complete the two statements required to finish this method
 
 """
-from ch03_oo.starter.document import DocumentManager
+from ch03.starter.document import DocumentManager
 
 database = '../../resources/documents.db'
 

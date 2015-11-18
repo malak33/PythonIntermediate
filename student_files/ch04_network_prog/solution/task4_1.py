@@ -12,7 +12,7 @@
     Also, remember to run server.py before running this client.
 """
 
-import ch04_network_prog.solution.client as client
+import client as client
 
 
 file_to_send = '../harry.jpg'

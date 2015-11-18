@@ -29,8 +29,8 @@ try:
             print('Error: {err}'.format(err=e))
 except IOError as e:
     print(e)
-
-
+print(school_data)
+###
 school_data = school_data[1:]
 connection = None
 try:
@@ -48,4 +48,4 @@ except sqlite3.Error as e:
     print('Error: {0}'.format(e))
 finally:
     if connection:
-        connection.close()
+        connection.close()###
