@@ -20,6 +20,6 @@ class Pinger(Thread):
         results, err = p.communicate(None)
         print('Results: {0}'.format(results.decode()))
 
-addresses = 'www.google.com', 'www.yahoo.com', 'www.im_a_fake_address.com'
+addresses = 'www.google.com', 'www.yahoo.com', 'www.theverge.com'
 for addr in addresses:
     Pinger(addr).start()
